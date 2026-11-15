@@ -1,223 +1,509 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Forsyn | Monitor Clínico</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="demo-shell">
-      <div class="phone-frame">
-        <div class="phone-screen">
-          <header class="phone-header">
-            <div class="monitor-label">MONITOREO CLÍNICO</div>
-            <div class="header-status">
-              <span class="tiny-dot"></span>
-              <span class="status-pill">BLE</span>
-              <span class="status-pill">82%</span>
-            </div>
-          </header>
+:root {
+  --bg-black: #0f1014;
+  --screen-bg: #f3f2f4;
+  --line: #e1dfe3;
+  --text: #2b2e35;
+  --muted: #6b6d74;
+  --red: #e93966;
+  --red-dark: #d71b4d;
+  --green: #2b9f67;
+  --nav-text: #5d5c63;
+}
 
-          <div class="alert-banner">
-            <div class="alert-icon">!</div>
-            <div class="alert-copy">
-              <strong>Alerta Crítica</strong>
-              <span>SpO₂ de 86% bajo 7 min y 90%.</span>
-            </div>
-            <div class="alert-action">📞</div>
-          </div>
+* { box-sizing: border-box; }
 
-          <div class="pulse-panel">
-            <div class="pulse-graphic">
-              <svg viewBox="0 0 220 220" class="ring-svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="ringGrad" x1="0%" x2="100%" y1="0%" y2="100%">
-                    <stop offset="0%" stop-color="#f8d7d7" />
-                    <stop offset="100%" stop-color="#d62d62" />
-                  </linearGradient>
-                </defs>
-                <circle cx="110" cy="110" r="82" class="ring-base" />
-                <circle cx="110" cy="110" r="82" class="ring-progress" />
-              </svg>
-              <div class="pulse-center">
-                <div class="heart-badge">❤</div>
-                <div class="pulse-number">74</div>
-                <div class="pulse-unit">BPM</div>
-              </div>
-            </div>
-            <div class="rhythm-label">RITMO NORMAL</div>
-          </div>
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Inter", sans-serif;
+  background: var(--bg-black);
+  color: var(--text);
+}
 
-          <div class="wave-panel">
-            <div class="wave-header">
-              <span>SEÑAL EN VIVO</span>
-              <span>Sincronizado 21:18</span>
-            </div>
-            <svg viewBox="0 0 320 70" class="wave-svg" aria-hidden="true">
-              <path d="M0 37 L18 39 L34 36 L52 42 L67 35 L82 38 L95 30 L111 41 L128 26 L144 35 L160 40 L176 33 L188 31 L204 48 L216 33 L232 28 L245 36 L260 30 L276 39 L295 40 L320 35" />
-            </svg>
-          </div>
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
 
-          <div class="vitals-grid">
-            <div class="vital-card low">
-              <div class="vital-top">
-                <div class="vital-icon">◌</div>
-                <span class="vital-tag">Baja</span>
-              </div>
-              <div class="vital-value">86 <small>%</small></div>
-              <div class="vital-label">Saturación SpO₂</div>
-            </div>
+.demo-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 44px;
+  width: 100%;
+  max-width: 1200px;
+}
 
-            <div class="vital-card normal">
-              <div class="vital-top">
-                <div class="vital-icon temp-icon">◌</div>
-                <span class="vital-tag normal-tag">Normal</span>
-              </div>
-              <div class="vital-value">36.7 <small>°C</small></div>
-              <div class="vital-label">Temp. Corporal</div>
-            </div>
-          </div>
+.phone-frame {
+  position: relative;
+  width: 420px;
+  height: 780px;
+  background: #080b0d;
+  border-radius: 42px;
+  box-shadow: 0 40px 70px rgba(0, 0, 0, 0.62), inset 0 0 0 7px #101317;
+  padding: 18px;
+}
 
-          <div class="conductivity-card">
-            <div class="conductivity-info">
-              <div class="conductivity-icon">◌</div>
-              <div>
-                <div class="card-title">Conductancia Cutánea</div>
-                <div class="card-subtitle">Índice de estrés: 18/100</div>
-              </div>
-            </div>
-            <span class="vital-tag danger-tag">Bajo</span>
-          </div>
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--screen-bg);
+  border-radius: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 16px 16px 0;
+}
 
-          <nav class="bottom-nav">
-            <div class="nav-item active">
-              <span>⌂</span>
-              <small>Inicio</small>
-            </div>
-            <div class="nav-item">
-              <span>◔</span>
-              <small>Historial</small>
-            </div>
-            <div class="nav-item">
-              <span>⚑</span>
-              <small>Asistencia</small>
-            </div>
-            <div class="nav-item">
-              <span>◍</span>
-              <small>Alertas</small>
-            </div>
-            <div class="nav-item">
-              <span>⚙</span>
-              <small>Ajustes</small>
-            </div>
-          </nav>
-        </div>
-      </div>
+.phone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px 10px;
+}
 
-      <aside class="demo-sidebar">
-        <h3>MODO DEMOSTRACIÓN</h3>
+.monitor-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: #3b3d41;
+  font-weight: 800;
+}
 
-        <div class="side-card">
-          <div class="side-row">
-            <div class="mini-icon">❤</div>
-            <div class="side-copy">
-              <strong>Bradicardia</strong>
-              <span>42 BPM</span>
-            </div>
-          </div>
-        </div>
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-        <div class="side-card">
-          <div class="side-row">
-            <div class="mini-icon">❤</div>
-            <div class="side-copy">
-              <strong>Taquicardia</strong>
-              <span>150 BPM</span>
-            </div>
-          </div>
-        </div>
+.tiny-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d5d4d8, #5d5f68);
+  display: inline-block;
+}
 
-        <div class="side-card danger-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Saturación baja</strong>
-              <span>SpO₂ 86 %</span>
-            </div>
-          </div>
-        </div>
+.status-pill {
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #363a40;
+}
 
-        <div class="side-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Fiebre</strong>
-              <span>39 °C</span>
-            </div>
-          </div>
-        </div>
+.alert-banner {
+  background: linear-gradient(135deg, #ef4b6a, #d33160);
+  color: white;
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 34px 1fr 38px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 14px 22px rgba(214, 49, 95, 0.2);
+}
 
-        <div class="side-card danger-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Estrés alto</strong>
-              <span>Índice 88/100</span>
-            </div>
-          </div>
-        </div>
+.alert-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.22);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
 
-        <div class="side-card neutral-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Estado normal</strong>
-              <span>Restablecer valores</span>
-            </div>
-          </div>
-        </div>
+.alert-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
 
-        <p class="demo-note">
-          Simulación activa: Saturación baja.<br />
-          Cada escenario modifica su signo vital. Los demás vuelven a sus valores normales.
-        </p>
-      </aside>
-    </div>
+.alert-copy strong {
+  font-size: 0.98rem;
+}
 
-    <script src="script.js"></script>
-  </body>
-</html>
+.alert-copy span {
+  font-size: 0.72rem;
+  opacity: 0.95;
+  line-height: 1.2;
+}
 
+.alert-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
 
+.pulse-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+}
 
+.pulse-graphic {
+  position: relative;
+  width: 230px;
+  height: 230px;
+  display: grid;
+  place-items: center;
+}
 
+.ring-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
 
+.ring-base {
+  fill: none;
+  stroke: rgba(112, 115, 122, 0.18);
+  stroke-width: 15;
+}
 
+.ring-progress {
+  fill: none;
+  stroke: url(#ringGrad);
+  stroke-width: 15;
+  stroke-linecap: round;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 120;
+}
 
+.pulse-center {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(236,236,237,0.7));
+  border: 12px solid rgba(255,255,255,0.58);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
 
+.heart-badge {
+  color: var(--red-dark);
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-top: 4px;
+}
 
+.pulse-number {
+  font-size: 4.2rem;
+  line-height: 0.96;
+  letter-spacing: -0.08em;
+  font-weight: 800;
+  color: #2a2d34;
+}
 
+.pulse-unit {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
 
+.rhythm-label {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: #666972;
+  font-weight: 700;
+}
 
+.wave-panel {
+  margin-top: 16px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 12px 8px;
+}
 
+.wave-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: #666971;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
 
+.wave-svg {
+  display: block;
+  width: 100%;
+  height: 52px;
+}
 
+.wave-svg path {
+  fill: none;
+  stroke: #d4325c;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
+.vitals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
 
+.vital-card {
+  background: rgba(255,255,255,0.46);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 12px 10px;
+}
 
+.vital-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 
+.vital-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #dfeafc;
+  color: #3b7ae5;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
 
+.temp-icon {
+  background: #f9dfe7;
+  color: #d0477c;
+}
 
+.vital-tag {
+  border-radius: 999px;
+  background: rgba(119, 190, 146, 0.18);
+  color: #1a8b5d;
+  padding: 4px 8px;
+  font-size: 0.58rem;
+  font-weight: 700;
+}
 
+.normal-tag {
+  background: rgba(165, 197, 255, 0.18);
+  color: #4a7bdd;
+}
 
+.vital-value {
+  font-size: 2rem;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+  font-weight: 800;
+  color: #23262d;
+}
 
+.vital-value small {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
 
+.vital-label {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
 
+.conductivity-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.46);
+  border: 1px solid var(--line);
+}
 
+.conductivity-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
+.conductivity-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #f4def7;
+  color: #8f53d6;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
 
+.card-title {
+  font-weight: 700;
+  font-size: 0.78rem;
+}
 
+.card-subtitle {
+  margin-top: 4px;
+  font-size: 0.64rem;
+  color: var(--muted);
+}
+
+.danger-tag {
+  background: rgba(255, 123, 82, 0.12);
+  color: #d75a20;
+}
+
+.bottom-nav {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 14px 0 0;
+  margin-top: 10px;
+  background: rgba(255,255,255,0.34);
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.nav-item {
+  padding: 8px 4px 12px;
+  color: var(--nav-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.2rem;
+}
+
+.nav-item small {
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
+}
+
+.nav-item.active {
+  color: var(--text);
+  position: relative;
+}
+
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--text);
+  bottom: 0;
+}
+
+.demo-sidebar {
+  width: 290px;
+  color: #f5f5f7;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.demo-sidebar h3 {
+  margin: 0 0 8px;
+  color: #f5f5f7;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.side-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.side-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mini-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+
+.side-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.side-copy strong {
+  font-size: 0.95rem;
+}
+
+.side-copy span {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.78);
+}
+
+.danger-card {
+  background: linear-gradient(135deg, rgba(238, 74, 110, 0.28), rgba(152, 62, 84, 0.18));
+}
+
+.neutral-card {
+  background: rgba(255,255,255,0.05);
+}
+
+.demo-note {
+  margin-top: 4px;
+  color: rgba(255,255,255,0.72);
+  font-size: 0.8rem;
+  line-height: 1.57;
+}
+
+@media (max-width: 980px) {
+  .demo-shell {
+    flex-direction: column;
+  }
+
+  .demo-sidebar {
+    width: min(100%, 420px);
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    padding: 20px 12px;
+  }
+
+  .phone-frame {
+    width: min(100%, 360px);
+    height: 720px;
+  }
+
+  .pulse-number {
+    font-size: 3.3rem;
+  }
+
+  .demo-sidebar {
+    width: 100%;
+  }
+}
