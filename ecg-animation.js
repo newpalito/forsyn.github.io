@@ -27,37 +27,63 @@
     let raf = 0;
     let paused = false;
     let lastFrame = 0;
-    let activeTab = 'home';
-    let switching = false;
     const bpmNode = document.getElementById('bpm');
     const toggle = document.getElementById('simulation-toggle');
     const reducedMotion = motionQuery.matches;
-
-    // Soft, short transitions for navigation and tactile button feedback.
-    const transitionStyles = document.createElement('style');
-    transitionStyles.textContent = `
-      @keyframes forsyn-view-in { from { opacity: 0; transform: translate3d(0, 9px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
-      @keyframes forsyn-view-out { from { opacity: 1; transform: translate3d(0, 0, 0); } to { opacity: 0; transform: translate3d(0, -5px, 0); } }
-      .app button { -webkit-tap-highlight-color: transparent; transition: transform 160ms cubic-bezier(.2,.8,.2,1), filter 180ms ease, background-color 220ms ease, color 220ms ease, box-shadow 220ms ease; }
-      .app button:active { transform: scale(.96); filter: brightness(.97); }
-      .app button:focus-visible { outline: 2px solid #df2855; outline-offset: 3px; }
-      @media (prefers-reduced-motion: reduce) { .app button { transition: none !important; } }
-    `;
-    document.head.append(transitionStyles);
-
     const titles = {
       home: ['FORSYN', 'Monitoreo personal'],
       history: ['Historial médico', 'Tendencias y bitácora'],
       alerts: ['Alertas', 'Umbrales y contactos'],
       settings: ['Ajustes', 'Dispositivo y preferencias']
     };
-    const tabButtons = [...document.querySelectorAll('.nav-btn[data-tab]')];
+    let activeTab = 'home';
+    let switching = false;
 
-    function setActiveButton(tab) {
-      tabButtons.forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
-    }
+    const transitionStyles = document.createElement('style');
+    transitionStyles.textContent = `
+      @keyframes forsyn-view-in {
+        0% { opacity: 0; transform: translate3d(0, 8px, 0) scale(.995); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+      }
+      @keyframes forsyn-view-out {
+        0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        100% { opacity: 0; transform: translate3d(0, -5px, 0) scale(1.005); }
+      }
+      .app .nav-btn,
+      .app .period,
+      .app .button-row button,
+      .app .modal-actions button {
+        transition: transform 180ms cubic-bezier(.2,.8,.2,1),
+                    filter 180ms ease,
+                    box-shadow 220ms ease,
+                    background-color 220ms ease,
+                    color 220ms ease;
+      }
+      .app .nav-btn:active,
+      .app .period:active,
+      .app .button-row button:active,
+      .app .modal-actions button:active {
+        transform: translateY(1px) scale(.975);
+        filter: brightness(.98);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .app .nav-btn,
+        .app .period,
+        .app .button-row button,
+        .app .modal-actions button {
+          transition: none !important;
+        }
+      }
+    `;
+    document.head.append(transitionStyles);
 
-    function selectTab(tab) {
+    const setActiveButton = (tab) => {
+      document.querySelectorAll('.nav-btn[data-tab]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.tab === tab);
+      });
+    };
+
+    const selectTab = (tab) => {
       if (!titles[tab] || switching || tab === activeTab) return;
       const current = document.getElementById(`view-${activeTab}`);
       const next = document.getElementById(`view-${tab}`);
@@ -67,14 +93,6 @@
       setActiveButton(tab);
       document.getElementById('header-title').textContent = titles[tab][0];
       document.getElementById('header-subtitle').textContent = titles[tab][1];
-      if (tab === 'history') {
-        // Let the browser lay out the newly visible chart before it is drawn.
-        next.hidden = false;
-        requestAnimationFrame(() => {
-          window.dispatchEvent(new Event('resize'));
-          next.scrollTop = 0;
-        });
-      }
 
       if (reducedMotion) {
         current.hidden = true;
@@ -83,26 +101,27 @@
       }
 
       switching = true;
-      current.style.animation = 'forsyn-view-out 130ms cubic-bezier(.4,0,.2,1) both';
+      current.style.animation = 'forsyn-view-out 180ms cubic-bezier(.4,0,.2,1) forwards';
+      next.hidden = false;
+      next.style.opacity = '0';
+      next.style.transform = 'translate3d(0, 8px, 0) scale(.995)';
+      next.style.animation = 'forsyn-view-in 260ms cubic-bezier(.2,.75,.25,1) forwards';
+
       window.setTimeout(() => {
         current.hidden = true;
         current.style.animation = '';
-        next.hidden = false;
-        next.style.animation = 'forsyn-view-in 300ms cubic-bezier(.2,.75,.25,1) both';
-        window.setTimeout(() => {
-          next.style.animation = '';
-          switching = false;
-        }, 310);
-      }, 135);
-    }
+        next.style.animation = '';
+        next.style.opacity = '';
+        next.style.transform = '';
+        switching = false;
+      }, 260);
+    };
 
-    // Capture the existing tab click handler so the transition can finish before
-    // swapping views; all other buttons keep their existing behavior.
-    document.addEventListener('click', event => {
+    document.addEventListener('click', (event) => {
       const button = event.target.closest('.nav-btn[data-tab]');
       if (!button) return;
       event.preventDefault();
-      event.stopImmediatePropagation();
+      event.stopPropagation();
       selectTab(button.dataset.tab);
     }, true);
 
