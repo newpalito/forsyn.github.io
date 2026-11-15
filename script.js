@@ -1,250 +1,528 @@
-const STORAGE_KEY = 'mediflow-clinic-data';
+:root {
+  --bg-black: #0f1014;
+  --bg-graphite: #181b20;
+  --panel-light: #f3f2f4;
+  --screen-bg: #f4f3f4;
+  --card: #ffffff;
+  --soft: #ebe6eb;
+  --line: #ded8de;
+  --text: #2a2d34;
+  --muted: #6b6e76;
+  --shadow: rgba(0, 0, 0, 0.28);
+  --red: #e93966;
+  --red-dark: #d71b4d;
+  --red-soft: #f7d4d8;
+  --green: #36b77d;
+  --green-soft: #dff5ea;
+  --yellow: #f4aa4d;
+  --orange: #f3b31f;
+  --purple: #8c5cf0;
+  --nav-text: #5d5c63;
+}
 
-const defaultData = {
-  appointments: [
-    { id: 1, name: 'Ana García', age: 32, doctor: 'Dra. López', time: '09:30', reason: 'Dolor de cabeza frecuente y fatiga.', status: 'Pendiente' },
-    { id: 2, name: 'Luis Pérez', age: 52, doctor: 'Dr. Moreno', time: '10:15', reason: 'Control de presión arterial.', status: 'En consulta' },
-    { id: 3, name: 'Sofía Ruiz', age: 28, doctor: 'Dra. Castro', time: '11:00', reason: 'Consulta por alergias estacionales.', status: 'Pendiente' },
-    { id: 4, name: 'Mateo Díaz', age: 45, doctor: 'Dr. Ruiz', time: '12:30', reason: 'Seguimiento post operatorio.', status: 'Confirmado' }
-  ]
-};
+* {
+  box-sizing: border-box;
+}
 
-const statConfig = [
-  { title: 'Citas hoy', icon: '📅', color: 'linear-gradient(135deg, #d7eaff, #cfe3ff)', valueKey: 'appointments' },
-  { title: 'Pacientes', icon: '👥', color: 'linear-gradient(135deg, #d9f7ec, #cff0e3)', valueKey: 'patients' },
-  { title: 'Urgencias', icon: '🚑', color: 'linear-gradient(135deg, #ffe5d9, #ffd7d0)', valueKey: 'emergency' },
-  { title: 'Cobertura', icon: '✅', color: 'linear-gradient(135deg, #e6e0ff, #d9d7ff)', valueKey: 'coverage' }
-];
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Inter", sans-serif;
+  background: var(--bg-black);
+  color: var(--text);
+}
 
-const form = document.getElementById('patientForm');
-const searchInput = document.getElementById('searchInput');
-const statsGrid = document.getElementById('statsGrid');
-const appointmentsList = document.getElementById('appointmentsList');
-const recordsList = document.getElementById('recordsList');
+body {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 32px;
+}
 
-function loadData() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (!saved) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-    return structuredClone(defaultData);
+.demo-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 44px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.phone-frame {
+  position: relative;
+  width: 420px;
+  height: 780px;
+  background: #090a0d;
+  border-radius: 42px;
+  box-shadow: 0 35px 65px rgba(0, 0, 0, 0.6), inset 0 0 0 7px #111317;
+  padding: 18px;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--screen-bg);
+  border-radius: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  padding: 16px 16px 0;
+}
+
+.phone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 10px;
+}
+
+.monitor-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: #3d3d40;
+  font-weight: 700;
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tiny-dot {
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #d5d4d8, #51525a);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.04);
+}
+
+.status-pill {
+  border-radius: 999px;
+  background: rgba(0,0,0,0.06);
+  padding: 6px 9px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #34353a;
+}
+
+.alert-banner {
+  background: linear-gradient(135deg, #ef4b6a, #d6315f);
+  color: #fff;
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 34px 1fr 38px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 20px rgba(214, 49, 95, 0.2);
+}
+
+.alert-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.alert-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alert-copy strong {
+  font-size: 0.98rem;
+}
+
+.alert-copy span {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  opacity: 0.95;
+}
+
+.alert-action {
+  background: rgba(255,255,255,0.18);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+
+.pulse-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.pulse-graphic {
+  position: relative;
+  width: 230px;
+  height: 230px;
+  display: grid;
+  place-items: center;
+}
+
+.ring-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-base {
+  fill: none;
+  stroke: rgba(112, 115, 122, 0.18);
+  stroke-width: 15;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: url(#ringGrad);
+  stroke-width: 15;
+  stroke-linecap: round;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 120;
+}
+
+.pulse-center {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(238,238,239,0.68));
+  border: 12px solid rgba(255,255,255,0.55);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.heart-badge {
+  color: var(--red-dark);
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-top: 4px;
+}
+
+.pulse-number {
+  font-size: 4.2rem;
+  line-height: 0.96;
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  color: #2d2d33;
+}
+
+.pulse-unit {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.rhythm-label {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: #666972;
+  font-weight: 700;
+}
+
+.wave-panel {
+  margin-top: 16px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 12px 8px;
+}
+
+.wave-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: #666971;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.wave-svg {
+  display: block;
+  width: 100%;
+  height: 52px;
+}
+
+.wave-svg path {
+  fill: none;
+  stroke: #d4325c;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vitals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.vital-card {
+  background: rgba(255,255,255,0.46);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 12px 10px;
+}
+
+.vital-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.vital-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #dfeafc;
+  color: #3b7ae5;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
+
+.temp-icon {
+  background: #f9dfe7;
+  color: #d0477c;
+}
+
+.vital-tag {
+  border-radius: 999px;
+  background: rgba(119, 190, 146, 0.18);
+  color: #1a8b5d;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.normal-tag {
+  background: rgba(165, 197, 255, 0.18);
+  color: #4a7bdd;
+}
+
+.vital-value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+  color: #23262d;
+}
+
+.vital-value small {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+.vital-label {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.conductivity-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.46);
+  border: 1px solid var(--line);
+}
+
+.conductivity-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.conductivity-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #f4def7;
+  color: #8f53d6;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.card-subtitle {
+  font-size: 0.64rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.danger-tag {
+  background: rgba(255, 123, 82, 0.12);
+  color: #d75a20;
+}
+
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 14px 0 0;
+  margin-top: 10px;
+  background: rgba(255,255,255,0.34);
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.nav-item {
+  padding: 8px 4px 12px;
+  color: var(--nav-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.2rem;
+}
+
+.nav-item small {
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
+}
+
+.nav-item.active {
+  color: var(--text);
+  position: relative;
+}
+
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--text);
+  bottom: 0;
+}
+
+.demo-sidebar {
+  width: 290px;
+  color: #f2f3f5;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.demo-sidebar h3 {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: #f2f3f5;
+  font-weight: 700;
+}
+
+.side-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.side-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mini-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+
+.side-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.side-copy strong {
+  font-size: 0.95rem;
+}
+
+.side-copy span {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.78);
+}
+
+.danger-card {
+  background: linear-gradient(135deg, rgba(238, 74, 110, 0.28), rgba(152, 62, 84, 0.18));
+}
+
+.neutral-card {
+  background: rgba(255,255,255,0.05);
+}
+
+.demo-note {
+  margin-top: 4px;
+  color: rgba(255,255,255,0.72);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 980px) {
+  .demo-shell {
+    flex-direction: column;
   }
 
-  try {
-    return JSON.parse(saved);
-  } catch {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-    return structuredClone(defaultData);
+  .demo-sidebar {
+    width: min(100%, 420px);
   }
 }
 
-let clinicData = loadData();
-
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(clinicData));
-}
-
-function getInitials(name) {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map(part => part[0]?.toUpperCase() || '')
-    .join('');
-}
-
-function renderStats() {
-  const totalAppointments = clinicData.appointments.length;
-  const patientsCount = clinicData.appointments.length;
-  const emergencyCount = clinicData.appointments.filter(item => item.status === 'En consulta').length;
-  const coverage = Math.min(98, Math.max(86, Math.round((totalAppointments / 5) * 100)));
-
-  const stats = [
-    { title: 'Citas hoy', value: totalAppointments, trend: '+12%' },
-    { title: 'Pacientes', value: patientsCount, trend: '+8%' },
-    { title: 'Urgencias', value: emergencyCount, trend: '-3%' },
-    { title: 'Cobertura', value: `${coverage}%`, trend: '+5%' }
-  ];
-
-  statsGrid.innerHTML = stats.map((item, index) => {
-    const config = statConfig[index];
-    return `
-      <article class="stat-card">
-        <div class="stat-icon" style="background:${config.color}">${config.icon}</div>
-        <h3>${item.title}</h3>
-        <div class="stat-value">
-          <strong>${item.value}</strong>
-          <span class="trend up">${item.trend}</span>
-        </div>
-      </article>
-    `;
-  }).join('');
-}
-
-function renderAppointments() {
-  const query = searchInput.value.trim().toLowerCase();
-  const filtered = clinicData.appointments.filter(item =>
-    item.name.toLowerCase().includes(query) ||
-    item.doctor.toLowerCase().includes(query) ||
-    item.reason.toLowerCase().includes(query)
-  );
-
-  if (!filtered.length) {
-    appointmentsList.innerHTML = `
-      <div class="appointment-item">
-        <div class="appointment-meta">
-          <h4>No se encontraron citas</h4>
-          <p>Prueba otra búsqueda o agrega una nueva cita.</p>
-        </div>
-      </div>
-    `;
-    return;
+@media (max-width: 560px) {
+  body {
+    padding: 20px 12px;
   }
 
-  appointmentsList.innerHTML = filtered.map(item => {
-    const badgeClass = item.status === 'Pendiente' ? 'warning' : item.status === 'En consulta' ? 'success' : '';
-    return `
-      <div class="appointment-item">
-        <div class="avatar">${getInitials(item.name)}</div>
-        <div class="appointment-meta">
-          <h4>${item.name}</h4>
-          <p>${item.time} · ${item.doctor} · ${item.reason}</p>
-        </div>
-        <span class="badge ${badgeClass}">${item.status}</span>
-      </div>
-    `;
-  }).join('');
+  .phone-frame {
+    width: min(100%, 360px);
+    height: 720px;
+  }
+
+  .pulse-number {
+    font-size: 3.3rem;
+  }
+
+  .demo-sidebar {
+    width: 100%;
+  }
 }
-
-function renderRecords() {
-  recordsList.innerHTML = clinicData.appointments.map(item => `
-    <article class="record-card">
-      <div>
-        <h4>${item.name}</h4>
-        <p>${item.reason}</p>
-        <div class="meta">
-          <span>${item.age} años</span>
-          <span>${item.doctor}</span>
-          <span>${item.time}</span>
-        </div>
-      </div>
-      <button class="status-action" data-id="${item.id}">${item.status === 'Pendiente' ? 'Atender' : 'Revisar'}</button>
-    </article>
-  `).join('');
-
-  document.querySelectorAll('.status-action').forEach(button => {
-    button.addEventListener('click', () => {
-      const id = Number(button.dataset.id);
-      const item = clinicData.appointments.find(entry => entry.id === id);
-      if (!item) return;
-
-      item.status = item.status === 'Pendiente' ? 'En consulta' : 'Confirmado';
-      saveData();
-      renderAll();
-    });
-  });
-}
-
-function renderAll() {
-  renderStats();
-  renderAppointments();
-  renderRecords();
-}
-
-form.addEventListener('submit', event => {
-  event.preventDefault();
-
-  const name = document.getElementById('name').value.trim();
-  const age = Number(document.getElementById('age').value);
-  const doctor = document.getElementById('doctor').value;
-  const time = document.getElementById('time').value;
-  const reason = document.getElementById('reason').value.trim();
-
-  if (!name || !age || !time || !reason) return;
-
-  const newAppointment = {
-    id: Date.now(),
-    name,
-    age,
-    doctor,
-    time,
-    reason,
-    status: 'Pendiente'
-  };
-
-  clinicData.appointments.unshift(newAppointment);
-  saveData();
-  form.reset();
-  renderAll();
-});
-
-document.getElementById('clearForm').addEventListener('click', () => form.reset());
-searchInput.addEventListener('input', renderAppointments);
-
-document.querySelector('.emergency-btn').addEventListener('click', () => {
-  const emergencyPatient = {
-    id: Date.now(),
-    name: 'Paciente de urgencia',
-    age: 0,
-    doctor: 'Equipo de guardia',
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    reason: 'Atención inmediata requerida.',
-    status: 'En consulta'
-  };
-
-  clinicData.appointments.unshift(emergencyPatient);
-  saveData();
-  renderAll();
-});
-
-renderAll();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
