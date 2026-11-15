@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediFlow | Clínica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">+</div>
+          <div>
+            <h1>MediFlow</h1>
+            <small>Clínica integral</small>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item active">Dashboard</button>
+          <button class="nav-item">Pacientes</button>
+          <button class="nav-item">Agenda</button>
+          <button class="nav-item">Informes</button>
+          <button class="nav-item">Configuración</button>
+        </nav>
+
+        <div class="sidebar-card">
+          <p class="eyebrow">Urgencia</p>
+          <h3>Atención activa</h3>
+          <button class="emergency-btn">Llamar al equipo</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Resumen</p>
+            <h2>Panel médico</h2>
+          </div>
+          <div class="topbar-actions">
+            <button class="ghost-btn">Exportar</button>
+            <button class="primary-btn">Nueva cita</button>
+          </div>
+        </header>
+
+        <section class="stats-grid" id="statsGrid"></section>
+
+        <section class="content-grid">
+          <div class="panel form-panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Registro</p>
+                <h3>Agregar paciente</h3>
+              </div>
+            </div>
+
+            <form id="patientForm">
+              <div class="field-row two-cols">
+                <label>
+                  Nombre completo
+                  <input type="text" id="name" placeholder="Ej. Ana García" required />
+                </label>
+                <label>
+                  Edad
+                  <input type="number" id="age" min="0" max="120" placeholder="32" required />
+                </label>
+              </div>
+
+              <div class="field-row two-cols">
+                <label>
+                  Especialista
+                  <select id="doctor" required>
+                    <option value="Dra. López">Dra. López</option>
+                    <option value="Dr. Moreno">Dr. Moreno</option>
+                    <option value="Dra. Castro">Dra. Castro</option>
+                    <option value="Dr. Ruiz">Dr. Ruiz</option>
+                  </select>
+                </label>
+                <label>
+                  Hora
+                  <input type="time" id="time" required />
+                </label>
+              </div>
+
+              <label>
+                Motivo de consulta
+                <textarea id="reason" rows="4" placeholder="Describa la consulta o síntoma principal" required></textarea>
+              </label>
+
+              <div class="form-actions">
+                <button type="button" class="ghost-btn" id="clearForm">Limpiar</button>
+                <button type="submit" class="primary-btn">Guardar cita</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel appointments-panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Agenda</p>
+                <h3>Próximas citas</h3>
+              </div>
+              <input type="search" id="searchInput" placeholder="Buscar paciente" />
+            </div>
+
+            <div id="appointmentsList" class="appointments-list"></div>
+          </div>
+        </section>
+
+        <section class="panel records-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Historial</p>
+              <h3>Pacientes del día</h3>
+            </div>
+          </div>
+          <div id="recordsList" class="records-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
