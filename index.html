@@ -10,187 +10,32 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20261115-final" />
+    <link rel="stylesheet" href="styles.css?v=20261115-screenshot-match" />
   </head>
   <body>
-    <div class="demo-shell">
-      <div class="phone-frame">
-        <div class="phone-screen">
-          <header class="phone-header">
-            <div class="monitor-label">MONITOREO CLÍNICO</div>
-            <div class="header-status">
-              <span class="tiny-dot"></span>
-              <span class="status-pill">BLE</span>
-              <span class="status-pill">82%</span>
-            </div>
-          </header>
-
-          <div class="alert-banner">
-            <div class="alert-icon">!</div>
-            <div class="alert-copy">
-              <strong>Alerta Crítica</strong>
-              <span>SpO₂ de 86% bajo 7 min y 90%.</span>
-            </div>
-            <div class="alert-action">📞</div>
-          </div>
-
-          <div class="pulse-panel">
-            <div class="pulse-graphic">
-              <svg viewBox="0 0 220 220" class="ring-svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="ringGrad" x1="0%" x2="100%" y1="0%" y2="100%">
-                    <stop offset="0%" stop-color="#f8d7d7" />
-                    <stop offset="100%" stop-color="#d62d62" />
-                  </linearGradient>
-                </defs>
-                <circle cx="110" cy="110" r="82" class="ring-base" />
-                <circle cx="110" cy="110" r="82" class="ring-progress" />
-              </svg>
-              <div class="pulse-center">
-                <div class="heart-badge">❤</div>
-                <div class="pulse-number">74</div>
-                <div class="pulse-unit">BPM</div>
-              </div>
-            </div>
-            <div class="rhythm-label">RITMO NORMAL</div>
-          </div>
-
-          <div class="wave-panel">
-            <div class="wave-header">
-              <span>SEÑAL EN VIVO</span>
-              <span>Sincronizado 21:18</span>
-            </div>
-            <svg viewBox="0 0 320 70" class="wave-svg" aria-hidden="true">
-              <path d="M0 37 L18 39 L34 36 L52 42 L67 35 L82 38 L95 30 L111 41 L128 26 L144 35 L160 40 L176 33 L188 31 L204 48 L216 33 L232 28 L245 36 L260 30 L276 39 L295 40 L320 35" />
-            </svg>
-          </div>
-
-          <div class="vitals-grid">
-            <div class="vital-card low">
-              <div class="vital-top">
-                <div class="vital-icon">◌</div>
-                <span class="vital-tag">Baja</span>
-              </div>
-              <div class="vital-value">86 <small>%</small></div>
-              <div class="vital-label">Saturación SpO₂</div>
-            </div>
-
-            <div class="vital-card normal">
-              <div class="vital-top">
-                <div class="vital-icon temp-icon">◌</div>
-                <span class="vital-tag normal-tag">Normal</span>
-              </div>
-              <div class="vital-value">36.7 <small>°C</small></div>
-              <div class="vital-label">Temp. Corporal</div>
-            </div>
-          </div>
-
-          <div class="conductivity-card">
-            <div class="conductivity-info">
-              <div class="conductivity-icon">◌</div>
-              <div>
-                <div class="card-title">Conductancia Cutánea</div>
-                <div class="card-subtitle">Índice de estrés: 18/100</div>
-              </div>
-            </div>
-            <span class="vital-tag danger-tag">Bajo</span>
-          </div>
-
-          <nav class="bottom-nav">
-            <div class="nav-item active">
-              <span>⌂</span>
-              <small>Inicio</small>
-            </div>
-            <div class="nav-item">
-              <span>◔</span>
-              <small>Historial</small>
-            </div>
-            <div class="nav-item">
-              <span>⚑</span>
-              <small>Asistencia</small>
-            </div>
-            <div class="nav-item">
-              <span>◍</span>
-              <small>Alertas</small>
-            </div>
-            <div class="nav-item">
-              <span>⚙</span>
-              <small>Ajustes</small>
-            </div>
-          </nav>
+    <div class="screen">
+      <div class="top-info">
+        <div class="label">MONITOREO CLÍNICO</div>
+        <div class="status-row">
+          <span class="status-pill" style="margin-right: 8px;">BLE</span>
+          <span class="status-pill">82%</span>
         </div>
       </div>
 
-      <aside class="demo-sidebar">
-        <h3>MODO DEMOSTRACIÓN</h3>
-
-        <div class="side-card">
-          <div class="side-row">
-            <div class="mini-icon">❤</div>
-            <div class="side-copy">
-              <strong>Bradicardia</strong>
-              <span>42 BPM</span>
-            </div>
-          </div>
+      <div class="alert-box">
+        <div class="alert-icon">!</div>
+        <div class="alert-text">
+          <div class="alert-title">Alerta Crítica</div>
+          <div class="alert-subtitle">SpO₂ de 86% bajo 7 min y 90%.</div>
         </div>
+        <div class="alert-call">📞</div>
+      </div>
 
-        <div class="side-card">
-          <div class="side-row">
-            <div class="mini-icon">❤</div>
-            <div class="side-copy">
-              <strong>Taquicardia</strong>
-              <span>150 BPM</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="side-card danger-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Saturación baja</strong>
-              <span>SpO₂ 86 %</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="side-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Fiebre</strong>
-              <span>39 °C</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="side-card danger-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Estrés alto</strong>
-              <span>Índice 88/100</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="side-card neutral-card">
-          <div class="side-row">
-            <div class="mini-icon">◌</div>
-            <div class="side-copy">
-              <strong>Estado normal</strong>
-              <span>Restablecer valores</span>
-            </div>
-          </div>
-        </div>
-
-        <p class="demo-note">
-          Simulación activa: Saturación baja.<br />
-          Cada escenario modifica su signo vital. Los demás vuelven a sus valores normales.
-        </p>
-      </aside>
+      <div class="semicircle-wrap">
+        <div class="semicircle"></div>
+      </div>
     </div>
 
-    <script src="script.js?v=20261115-final"></script>
+    <script src="script.js?v=20261115-screenshot-match"></script>
   </body>
 </html>
