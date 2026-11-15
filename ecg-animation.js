@@ -27,9 +27,84 @@
     let raf = 0;
     let paused = false;
     let lastFrame = 0;
+    let activeTab = 'home';
+    let switching = false;
     const bpmNode = document.getElementById('bpm');
     const toggle = document.getElementById('simulation-toggle');
     const reducedMotion = motionQuery.matches;
+
+    // Soft, short transitions for navigation and tactile button feedback.
+    const transitionStyles = document.createElement('style');
+    transitionStyles.textContent = `
+      @keyframes forsyn-view-in { from { opacity: 0; transform: translate3d(0, 9px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+      @keyframes forsyn-view-out { from { opacity: 1; transform: translate3d(0, 0, 0); } to { opacity: 0; transform: translate3d(0, -5px, 0); } }
+      .app button { -webkit-tap-highlight-color: transparent; transition: transform 160ms cubic-bezier(.2,.8,.2,1), filter 180ms ease, background-color 220ms ease, color 220ms ease, box-shadow 220ms ease; }
+      .app button:active { transform: scale(.96); filter: brightness(.97); }
+      .app button:focus-visible { outline: 2px solid #df2855; outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) { .app button { transition: none !important; } }
+    `;
+    document.head.append(transitionStyles);
+
+    const titles = {
+      home: ['FORSYN', 'Monitoreo personal'],
+      history: ['Historial médico', 'Tendencias y bitácora'],
+      alerts: ['Alertas', 'Umbrales y contactos'],
+      settings: ['Ajustes', 'Dispositivo y preferencias']
+    };
+    const tabButtons = [...document.querySelectorAll('.nav-btn[data-tab]')];
+
+    function setActiveButton(tab) {
+      tabButtons.forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
+    }
+
+    function selectTab(tab) {
+      if (!titles[tab] || switching || tab === activeTab) return;
+      const current = document.getElementById(`view-${activeTab}`);
+      const next = document.getElementById(`view-${tab}`);
+      if (!current || !next) return;
+
+      activeTab = tab;
+      setActiveButton(tab);
+      document.getElementById('header-title').textContent = titles[tab][0];
+      document.getElementById('header-subtitle').textContent = titles[tab][1];
+      if (tab === 'history') {
+        // Let the browser lay out the newly visible chart before it is drawn.
+        next.hidden = false;
+        requestAnimationFrame(() => {
+          window.dispatchEvent(new Event('resize'));
+          next.scrollTop = 0;
+        });
+      }
+
+      if (reducedMotion) {
+        current.hidden = true;
+        next.hidden = false;
+        return;
+      }
+
+      switching = true;
+      current.style.animation = 'forsyn-view-out 130ms cubic-bezier(.4,0,.2,1) both';
+      window.setTimeout(() => {
+        current.hidden = true;
+        current.style.animation = '';
+        next.hidden = false;
+        next.style.animation = 'forsyn-view-in 300ms cubic-bezier(.2,.75,.25,1) both';
+        window.setTimeout(() => {
+          next.style.animation = '';
+          switching = false;
+        }, 310);
+      }, 135);
+    }
+
+    // Capture the existing tab click handler so the transition can finish before
+    // swapping views; all other buttons keep their existing behavior.
+    document.addEventListener('click', event => {
+      const button = event.target.closest('.nav-btn[data-tab]');
+      if (!button) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      selectTab(button.dataset.tab);
+    }, true);
 
     function resize() {
       const rect = wrap.getBoundingClientRect();
@@ -127,7 +202,6 @@
     }
 
     toggle?.addEventListener('click', () => {
-      // The app changes the button label after this click; sync to its final state.
       requestAnimationFrame(() => /reanudar/i.test(toggle.textContent) ? stop() : resume());
     });
     document.addEventListener('visibilitychange', () => document.hidden ? cancelAnimationFrame(raf) : (!paused && !reducedMotion && resume()));
