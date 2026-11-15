@@ -1,47 +1,23 @@
-# MediFlow Clinic
+# FORSYN
 
-Esta es una pequeña aplicación médica para gestionar citas, pacientes y atención clínica en una interfaz moderna.
+Aplicación web estática de demostración para monitoreo personal. Las lecturas que muestra son simuladas y no son mediciones clínicas ni sustituyen la evaluación de un profesional de salud.
 
-## Cómo usarla
+## Uso
 
-1. Abre `index.html` en tu navegador, o
-2. Sube este repositorio a GitHub Pages para publicarlo automáticamente.
+Abre `index.html` en un navegador o publícalo con GitHub Pages.
 
-## Funcionalidades
+## Animación del electrocardiograma
 
-- Dashboard con indicadores médicos
-- Registro de pacientes y citas
-- Búsqueda de pacientes por nombre o motivo
-- Cambio de estado de atención
-- Diseño responsive para escritorio y móvil
+La animación visual mejorada está en `ecg-animation.js`. Para activarla, incluye este script en `index.html` después del script principal de la aplicación y antes de `</body>`:
 
-## Estructura
+```html
+<script src="ecg-animation.js"></script>
+```
 
-- `index.html`: estructura principal
-- `styles.css`: estilos visuales
-- `script.js`: lógica de la aplicación
+La animación dibuja una retícula tenue, un trazo P-QRS-T estilizado con brillo y un barrido suave. Se sincroniza con la pausa de la simulación y respeta la preferencia del sistema para reducir movimiento. Es un efecto visual ilustrativo, no una señal médica real.
 
-## Personalización
+## Archivos
 
-Puedes adaptar nombres de médicos, colores o secciones según el tipo de clínica que necesites.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- `index.html`: estructura y lógica actual de la app.
+- `ecg-animation.js`: animación visual mejorada del ECG.
+- `styles.css` y `script.js`: archivos existentes del repositorio.
