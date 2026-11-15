@@ -3,187 +3,194 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MediFlow | Clínica</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Forsyn | Monitor Clínico</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20261115-1" />
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand">
-          <div class="brand-mark">+</div>
-          <div>
-            <h1>MediFlow</h1>
-            <small>Clínica integral</small>
+    <div class="demo-shell">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <header class="phone-header">
+            <div class="monitor-label">MONITOREO CLÍNICO</div>
+            <div class="header-status">
+              <span class="tiny-dot"></span>
+              <span class="status-pill">BLE</span>
+              <span class="status-pill">82%</span>
+            </div>
+          </header>
+
+          <div class="alert-banner">
+            <div class="alert-icon">!</div>
+            <div class="alert-copy">
+              <strong>Alerta Crítica</strong>
+              <span>SpO₂ de 86% bajo 7 min y 90%.</span>
+            </div>
+            <div class="alert-action">📞</div>
+          </div>
+
+          <div class="pulse-panel">
+            <div class="pulse-graphic">
+              <svg viewBox="0 0 220 220" class="ring-svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+                    <stop offset="0%" stop-color="#f8d7d7" />
+                    <stop offset="100%" stop-color="#d62d62" />
+                  </linearGradient>
+                </defs>
+                <circle cx="110" cy="110" r="82" class="ring-base" />
+                <circle cx="110" cy="110" r="82" class="ring-progress" />
+              </svg>
+              <div class="pulse-center">
+                <div class="heart-badge">❤</div>
+                <div class="pulse-number">74</div>
+                <div class="pulse-unit">BPM</div>
+              </div>
+            </div>
+            <div class="rhythm-label">RITMO NORMAL</div>
+          </div>
+
+          <div class="wave-panel">
+            <div class="wave-header">
+              <span>SEÑAL EN VIVO</span>
+              <span>Sincronizado 21:18</span>
+            </div>
+            <svg viewBox="0 0 320 70" class="wave-svg" aria-hidden="true">
+              <path d="M0 37 L18 39 L34 36 L52 42 L67 35 L82 38 L95 30 L111 41 L128 26 L144 35 L160 40 L176 33 L188 31 L204 48 L216 33 L232 28 L245 36 L260 30 L276 39 L295 40 L320 35" />
+            </svg>
+          </div>
+
+          <div class="vitals-grid">
+            <div class="vital-card low">
+              <div class="vital-top">
+                <div class="vital-icon">◌</div>
+                <span class="vital-tag">Baja</span>
+              </div>
+              <div class="vital-value">86 <small>%</small></div>
+              <div class="vital-label">Saturación SpO₂</div>
+            </div>
+
+            <div class="vital-card normal">
+              <div class="vital-top">
+                <div class="vital-icon temp-icon">◌</div>
+                <span class="vital-tag normal-tag">Normal</span>
+              </div>
+              <div class="vital-value">36.7 <small>°C</small></div>
+              <div class="vital-label">Temp. Corporal</div>
+            </div>
+          </div>
+
+          <div class="conductivity-card">
+            <div class="conductivity-info">
+              <div class="conductivity-icon">◌</div>
+              <div>
+                <div class="card-title">Conductancia Cutánea</div>
+                <div class="card-subtitle">Índice de estrés: 18/100</div>
+              </div>
+            </div>
+            <span class="vital-tag danger-tag">Bajo</span>
+          </div>
+
+          <nav class="bottom-nav">
+            <div class="nav-item active">
+              <span>⌂</span>
+              <small>Inicio</small>
+            </div>
+            <div class="nav-item">
+              <span>◔</span>
+              <small>Historial</small>
+            </div>
+            <div class="nav-item">
+              <span>⚑</span>
+              <small>Asistencia</small>
+            </div>
+            <div class="nav-item">
+              <span>◍</span>
+              <small>Alertas</small>
+            </div>
+            <div class="nav-item">
+              <span>⚙</span>
+              <small>Ajustes</small>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <aside class="demo-sidebar">
+        <h3>MODO DEMOSTRACIÓN</h3>
+
+        <div class="side-card">
+          <div class="side-row">
+            <div class="mini-icon">❤</div>
+            <div class="side-copy">
+              <strong>Bradicardia</strong>
+              <span>42 BPM</span>
+            </div>
           </div>
         </div>
 
-        <nav class="nav">
-          <button class="nav-item active">Dashboard</button>
-          <button class="nav-item">Pacientes</button>
-          <button class="nav-item">Agenda</button>
-          <button class="nav-item">Informes</button>
-          <button class="nav-item">Configuración</button>
-        </nav>
-
-        <div class="sidebar-card">
-          <p class="eyebrow">Urgencia</p>
-          <h3>Atención activa</h3>
-          <button class="emergency-btn">Llamar al equipo</button>
+        <div class="side-card">
+          <div class="side-row">
+            <div class="mini-icon">❤</div>
+            <div class="side-copy">
+              <strong>Taquicardia</strong>
+              <span>150 BPM</span>
+            </div>
+          </div>
         </div>
+
+        <div class="side-card danger-card">
+          <div class="side-row">
+            <div class="mini-icon">◌</div>
+            <div class="side-copy">
+              <strong>Saturación baja</strong>
+              <span>SpO₂ 86 %</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-row">
+            <div class="mini-icon">◌</div>
+            <div class="side-copy">
+              <strong>Fiebre</strong>
+              <span>39 °C</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card danger-card">
+          <div class="side-row">
+            <div class="mini-icon">◌</div>
+            <div class="side-copy">
+              <strong>Estrés alto</strong>
+              <span>Índice 88/100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card neutral-card">
+          <div class="side-row">
+            <div class="mini-icon">◌</div>
+            <div class="side-copy">
+              <strong>Estado normal</strong>
+              <span>Restablecer valores</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="demo-note">
+          Simulación activa: Saturación baja.<br />
+          Cada escenario modifica su signo vital. Los demás vuelven a sus valores normales.
+        </p>
       </aside>
-
-      <main class="main-content">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Resumen</p>
-            <h2>Panel médico</h2>
-          </div>
-          <div class="topbar-actions">
-            <button class="ghost-btn">Exportar</button>
-            <button class="primary-btn">Nueva cita</button>
-          </div>
-        </header>
-
-        <section class="stats-grid" id="statsGrid"></section>
-
-        <section class="content-grid">
-          <div class="panel form-panel">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">Registro</p>
-                <h3>Agregar paciente</h3>
-              </div>
-            </div>
-
-            <form id="patientForm">
-              <div class="field-row two-cols">
-                <label>
-                  Nombre completo
-                  <input type="text" id="name" placeholder="Ej. Ana García" required />
-                </label>
-                <label>
-                  Edad
-                  <input type="number" id="age" min="0" max="120" placeholder="32" required />
-                </label>
-              </div>
-
-              <div class="field-row two-cols">
-                <label>
-                  Especialista
-                  <select id="doctor" required>
-                    <option value="Dra. López">Dra. López</option>
-                    <option value="Dr. Moreno">Dr. Moreno</option>
-                    <option value="Dra. Castro">Dra. Castro</option>
-                    <option value="Dr. Ruiz">Dr. Ruiz</option>
-                  </select>
-                </label>
-                <label>
-                  Hora
-                  <input type="time" id="time" required />
-                </label>
-              </div>
-
-              <label>
-                Motivo de consulta
-                <textarea id="reason" rows="4" placeholder="Describa la consulta o síntoma principal" required></textarea>
-              </label>
-
-              <div class="form-actions">
-                <button type="button" class="ghost-btn" id="clearForm">Limpiar</button>
-                <button type="submit" class="primary-btn">Guardar cita</button>
-              </div>
-            </form>
-          </div>
-
-          <div class="panel appointments-panel">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">Agenda</p>
-                <h3>Próximas citas</h3>
-              </div>
-              <input type="search" id="searchInput" placeholder="Buscar paciente" />
-            </div>
-
-            <div id="appointmentsList" class="appointments-list"></div>
-          </div>
-        </section>
-
-        <section class="panel records-panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">Historial</p>
-              <h3>Pacientes del día</h3>
-            </div>
-          </div>
-          <div id="recordsList" class="records-list"></div>
-        </section>
-      </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=20261115-1"></script>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
