@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SmartPatch Monitor - Aplicación Móvil</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background-color: #1e293b;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @media (min-width: 640px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+            .app-container {
+                width: 412px;
+                height: 892px;
+                max-height: 95vh;
+                border-radius: 44px;
+                border: 10px solid #020617;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: calc(90px + var(--sab));
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+        .animate-heartbeat { animation: heartbeat 1.2s infinite ease-in-out; }
+        .animate-heartbeat-fast { animation: heartbeat 0.4s infinite ease-in-out; }
+
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
+            70% { box-shadow: 0 0 0 16px rgba(225, 29, 72, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+        }
+        .pulse-emergency { animation: pulse-ring 1s infinite; }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease-in-out, stroke 0.5s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: calc(8px + var(--sab));
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="px-5 pt-6 pb-3 flex justify-between items-center bg-slate-800/95 z-20 sticky top-0 border-b border-slate-700/50" style="padding-top: calc(12px + var(--sat));">
+            <div class="flex flex-col">
+                <span class="text-[10px] text-slate-400 font-semibold tracking-widest uppercase" id="header-subtitle">Monitoreo Clínico</span>
+                <h1 class="text-xl font-bold text-white tracking-tight" id="header-title">SmartPatch</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 rounded-full border border-blue-500/20" id="ble-status">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    <i class="fa-brands fa-bluetooth-b text-blue-400 text-xs"></i>
+                    <span class="text-[11px] font-medium text-blue-400">BLE</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-slate-700/40 px-2.5 py-1 rounded-full border border-slate-700/60">
+                    <span class="text-xs font-semibold text-slate-200" id="battery-text">82%</span>
+                    <i class="fa-solid fa-battery-three-quarters text-emerald-400 text-sm"></i>
+                </div>
+            </div>
+        </header>
+
+        <div id="emergency-banner" class="hidden absolute top-[72px] left-0 w-full z-30 px-4 pt-2">
+            <div class="bg-rose-600 text-white rounded-2xl p-4 shadow-xl shadow-rose-950/50 flex items-center justify-between border border-rose-400/30">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/20 p-2.5 rounded-full h-11 w-11 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm leading-tight">Alerta Crítica</h3>
+                        <p class="text-xs text-rose-100">Taquicardia detectada. Evaluando protocolo.</p>
+                    </div>
+                </div>
+                <button onclick="triggerEmergencyCall()" class="bg-white text-rose-600 h-11 w-11 rounded-full flex items-center justify-center font-bold text-lg shadow-md active:scale-95 transition-transform shrink-0">
+                    <i class="fa-solid fa-phone"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-home" class="scrollable-content px-5 pt-4">
+            <div class="relative w-56 h-56 sm:w-64 sm:h-64 mx-auto my-4 flex justify-center items-center">
+                <svg class="absolute w-full h-full" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#334155" stroke-width="10"></circle>
+                    <circle id="hr-ring" class="progress-ring__circle" cx="60" cy="60" r="54" fill="none" stroke="#f43f5e" stroke-width="10" stroke-linecap="round" stroke-dasharray="339.29" stroke-dashoffset="90"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-2 h-2 rounded-full bg-rose-500 animate-heartbeat-fast"></span>
+                        <span class="text-[10px] uppercase tracking-[0.25em] text-slate-400">HR</span>
+                    </div>
+                    <div class="text-5xl font-bold leading-none text-white" id="bpm-value">72</div>
+                    <div class="text-[11px] font-medium mt-2 text-slate-400 uppercase tracking-[0.22em]">BPM</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <div class="bg-slate-700/80 rounded-2xl p-4 border border-slate-600/50 shadow-lg shadow-slate-950/20">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">SpO₂</span>
+                        <i class="fa-solid fa-wind text-cyan-400 text-sm"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-white" id="spo2-value">98</div>
+                    <div class="text-[11px] text-slate-400 mt-1">% saturación</div>
+                </div>
+                <div class="bg-slate-700/80 rounded-2xl p-4 border border-slate-600/50 shadow-lg shadow-slate-950/20">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Temp.</span>
+                        <i class="fa-solid fa-temperature-half text-yellow-400 text-sm"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-white" id="temp-value">36.8</div>
+                    <div class="text-[11px] text-slate-400 mt-1">°C corporal</div>
+                </div>
+            </div>
+
+            <div class="bg-slate-700/80 rounded-2xl border border-slate-600/50 p-4 shadow-lg shadow-slate-950/20 mb-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">ECG</div>
+                        <div class="text-sm font-semibold text-white">Monitoreo contínuo</div>
+                    </div>
+                    <div class="flex items-center gap-2 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/20">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                        </span>
+                        <span class="text-[10px] font-medium text-emerald-400">En vivo</span>
+                    </div>
+                </div>
+                <div class="h-24 bg-slate-900/70 rounded-xl overflow-hidden border border-slate-700 relative">
+                    <canvas id="ecgCanvas" class="absolute inset-0 w-full h-full"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-slate-700/80 rounded-2xl border border-slate-600/50 p-4 shadow-lg shadow-slate-950/20">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Resumen</div>
+                        <div class="text-sm font-semibold text-white">Estado general</div>
+                    </div>
+                    <div class="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold">Estable</div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-slate-800/80 rounded-xl p-2">
+                        <div class="text-[10px] uppercase tracking-[0.1em] text-slate-400">Paso</div>
+                        <div class="text-lg font-bold text-white">8,241</div>
+                    </div>
+                    <div class="bg-slate-800/80 rounded-xl p-2">
+                        <div class="text-[10px] uppercase tracking-[0.1em] text-slate-400">Sleep</div>
+                        <div class="text-lg font-bold text-white">7.4h</div>
+                    </div>
+                    <div class="bg-slate-800/80 rounded-xl p-2">
+                        <div class="text-[10px] uppercase tracking-[0.1em] text-slate-400">Ritmo</div>
+                        <div class="text-lg font-bold text-white">Sin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-history" class="scrollable-content px-5 pt-4 hidden">
+            <div class="bg-slate-700/80 rounded-2xl border border-slate-600/50 p-4 shadow-lg shadow-slate-950/20 mb-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Historial</div>
+                        <div class="text-sm font-semibold text-white">Tendencia de signos</div>
+                    </div>
+                    <div class="flex items-center gap-1 bg-slate-800/70 rounded-full p-1">
+                        <button class="tab-period active px-2.5 py-1 text-[10px] rounded-full bg-slate-700 text-white" data-period="day">Día</button>
+                        <button class="tab-period px-2.5 py-1 text-[10px] rounded-full text-slate-300" data-period="week">Semana</button>
+                        <button class="tab-period px-2.5 py-1 text-[10px] rounded-full text-slate-300" data-period="month">Mes</button>
+                    </div>
+                </div>
+                <div class="h-44 bg-slate-900/70 rounded-xl border border-slate-700 p-2">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-slate-700/80 rounded-2xl border border-slate-600/50 p-4">
+                    <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Media</div>
+                    <div class="text-2xl font-bold text-white mt-2">69</div>
+                    <div class="text-[11px] text-emerald-400 mt-1">-2 BPM vs ayer</div>
+                </div>
+                <div class="bg-slate-700/80 rounded-2xl border border-slate-600/50 p-4">
+                    <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Máximo</div>
+                    <div class="text-2xl font-bold text-white mt-2">94</div>
+                    <div class="text-[11px] text-rose-400 mt-1">Alerta breve</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-alerts" class="scrollable-content px-5 pt-4 hidden">
+            <div class="bg-slate-700/80 rounded-2xl border border-slate-600/50 p-4 shadow-lg shadow-slate-950/20 mb-4">
+                <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Umbrales</div>
+                <div class="mt-3 space-y-3">
+                    <div class="flex items-center justify-between bg-slate-800/70 rounded-xl p-3">
+                        <div>
+                            <div class="text-sm font-medium text-white">Frecuencia cardíaca</div>
+                            <div class="text-[11px] text-slate-400">Límite crítico 110 BPM</div>
+                        </div>
+                        <div class="text-lg font-bold text-rose-400">110</div>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-800/70 rounded-xl p-3">
+                        <div>
+                            <div class="text-sm font-medium text-white">SpO₂</div>
+                            <div class="text-[11px] text-slate-400">Mínimo 90%</div>
+                        </div>
+                        <div class="text-lg font-bold text-cyan-400">90%</div>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-800/70 rounded-xl p-3">
+                        <div>
+                            <div class="text-sm font-medium text-white">Temperatura</div>
+                            <div class="text-[11px] text-slate-400">Máximo 38.5°C</div>
+                        </div>
+                        <div class="text-lg font-bold text-yellow-400">38.5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-settings" class="scrollable-content px-5 pt-4 hidden">
+            <div class="bg-slate-700/80 rounded-2xl border border-slate-600/50 p-4 shadow-lg shadow-slate-950/20">
+                <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400 mb-3">Dispositivo</div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between bg-slate-800/70 rounded-xl p-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-xl bg-slate-900 flex items-center justify-center text-cyan-400"><i class="fa-solid fa-microchip"></i></div>
+                            <div>
+                                <div class="text-sm font-semibold text-white">SmartPatch V2</div>
+                                <div class="text-[11px] text-slate-400">ID: SP-2048</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold">Online</span>
+                    </div>
+
+                    <div class="bg-slate-800/70 rounded-xl p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-white">Frecuencia de muestreo</span>
+                            <span class="text-sm font-semibold text-cyan-400">250 Hz</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800/70 rounded-xl p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-white">Notificaciones</span>
+                            <span class="text-sm font-semibold text-emerald-400">Activas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="glass-panel fixed bottom-0 left-0 right-0 z-40">
+            <div class="flex justify-around items-center px-3 pt-2">
+                <button class="nav-btn flex flex-col items-center justify-center py-2 w-full rounded-xl text-slate-300 active:scale-95 transition-transform" data-view="home">
+                    <i class="fa-solid fa-house text-lg"></i>
+                    <span class="text-[10px] mt-1 uppercase tracking-[0.12em]">Inicio</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center justify-center py-2 w-full rounded-xl text-slate-300 active:scale-95 transition-transform" data-view="history">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                    <span class="text-[10px] mt-1 uppercase tracking-[0.12em]">Historial</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center justify-center py-2 w-full rounded-xl text-slate-300 active:scale-95 transition-transform" data-view="alerts">
+                    <i class="fa-solid fa-bell text-lg"></i>
+                    <span class="text-[10px] mt-1 uppercase tracking-[0.12em]">Alertas</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center justify-center py-2 w-full rounded-xl text-slate-300 active:scale-95 transition-transform" data-view="settings">
+                    <i class="fa-solid fa-sliders text-lg"></i>
+                    <span class="text-[10px] mt-1 uppercase tracking-[0.12em]">Ajustes</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        const views = {
+            home: document.getElementById('view-home'),
+            history: document.getElementById('view-history'),
+            alerts: document.getElementById('view-alerts'),
+            settings: document.getElementById('view-settings')
+        };
+
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.view;
+                Object.entries(views).forEach(([key, el]) => {
+                    el.classList.toggle('hidden', key !== target);
+                });
+                navButtons.forEach((b) => {
+                    const active = b === btn;
+                    b.classList.toggle('bg-slate-800/80', active);
+                    b.classList.toggle('text-white', active);
+                    b.classList.toggle('text-slate-300', !active);
+                });
+            });
+        });
+
+        const hrRing = document.getElementById('hr-ring');
+        const ringCircumference = 2 * Math.PI * 54;
+        hrRing.style.strokeDasharray = String(ringCircumference);
+
+        function updateRing(value) {
+            const percent = Math.min(Math.max(value / 180, 0), 1);
+            const dash = ringCircumference * (1 - percent);
+            hrRing.style.strokeDashoffset = String(dash);
+            hrRing.setAttribute('stroke', value > 100 ? '#fb7185' : value > 80 ? '#f59e0b' : '#f43f5e');
+        }
+
+        function triggerEmergencyCall() {
+            document.getElementById('emergency-banner').classList.remove('hidden');
+            document.getElementById('emergency-banner').classList.add('block');
+            document.getElementById('ble-status').classList.add('pulse-emergency');
+        }
+
+        const ecgCanvas = document.getElementById('ecgCanvas');
+        const ecgCtx = ecgCanvas.getContext('2d');
+        let ecgPhase = 0;
+        function drawECG() {
+            const canvas = ecgCanvas;
+            const rect = canvas.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            ecgCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+            ecgCtx.clearRect(0, 0, rect.width, rect.height);
+            ecgCtx.strokeStyle = '#f43f5e';
+            ecgCtx.lineWidth = 2;
+            ecgCtx.beginPath();
+
+            const centerY = rect.height / 2;
+            const bpm = 72 + Math.sin(ecgPhase) * 8;
+            const step = 1.5;
+            let x = 0;
+            while (x < rect.width) {
+                const p = x / rect.width;
+                const t = (x / rect.width) * 3.2 + ecgPhase;
+                const signal = Math.sin(t * 2.3) * 6 +
+                    (Math.sin(t * 7.0) * 0.9) +
+                    (Math.sin(t * 1.1) * 12) +
+                    (Math.sin(t * 4.6 + 2) * 10 * Math.max(0, Math.cos(t * 1.8)));
+                const y = centerY + signal;
+                if (x === 0) ecgCtx.moveTo(x, y);
+                else ecgCtx.lineTo(x, y);
+                x += step;
+            }
+
+            ecgCtx.stroke();
+            ecgPhase += 0.12;
+            requestAnimationFrame(drawECG);
+        }
+        requestAnimationFrame(drawECG);
+
+        const historyChart = document.getElementById('historyChart');
+        const chartCtx = historyChart.getContext('2d');
+        function setupHistoryChart() {
+            const data = {
+                labels: ['00', '02', '04', '06', '08', '10', '12', '14', '16', '18', '20', '22'],
+                datasets: [{
+                    label: 'FC',
+                    data: [74, 70, 81, 77, 82, 68, 72, 76, 74, 69, 73, 71],
+                    borderColor: '#f43f5e',
+                    backgroundColor: 'rgba(244, 63, 94, 0.15)',
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 0,
+                    borderWidth: 2
+                }]
+            };
+
+            const config = {
+                type: 'line',
+                data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: {
+                        x: { display: false, grid: { display: false } },
+                        y: { display: false, grid: { display: false } }
+                    }
+                }
+            };
+
+            new Chart(chartCtx, config);
+        }
+        setupHistoryChart();
+
+        const bpmValue = document.getElementById('bpm-value');
+        const spo2Value = document.getElementById('spo2-value');
+        const tempValue = document.getElementById('temp-value');
+
+        function simPulse() {
+            const now = Date.now() / 1000;
+            const bpm = 72 + Math.round(10 * Math.sin(now / 2.5)) + Math.round((Math.sin(now / 7) + 1) * 4);
+            const spo2 = 98 - Math.round(Math.abs(Math.sin(now / 3.5)) * 2);
+            const temp = (36.8 + Math.sin(now / 6) * 0.4).toFixed(1);
+
+            bpmValue.textContent = bpm;
+            spo2Value.textContent = spo2;
+            tempValue.textContent = temp;
+            updateRing(bpm);
+        }
+        setInterval(simPulse, 1200);
+        simPulse();
+
+        document.querySelectorAll('.tab-period').forEach((el) => {
+            el.addEventListener('click', () => {
+                document.querySelectorAll('.tab-period').forEach((btn) => {
+                    btn.classList.toggle('active', btn === el);
+                    btn.classList.toggle('bg-slate-700', btn === el);
+                    btn.classList.toggle('text-white', btn === el);
+                    btn.classList.toggle('text-slate-300', btn !== el);
+                });
+            });
+        });
+
+        const defaultView = 'home';
+        Object.entries(views).forEach(([key, el]) => el.classList.toggle('hidden', key !== defaultView));
+        navButtons.forEach((btn) => {
+            btn.classList.toggle('bg-slate-800/80', btn.dataset.view === defaultView);
+            btn.classList.toggle('text-white', btn.dataset.view === defaultView);
+            btn.classList.toggle('text-slate-300', btn.dataset.view !== defaultView);
+        });
+    </script>
+</body>
+</html>
